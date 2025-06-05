@@ -14,15 +14,15 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         .tab-button.active {
-            background-color: #4f46e5; /* indigo-600 */
+            background-color: #4f46e5;
             color: white;
             border-bottom: 2px solid #4f46e5;
         }
         .tab-button:not(.active):hover {
-            background-color: #e0e7ff; /* indigo-100 */
+            background-color: #e0e7ff;
         }
         .content-section {
-            display: none; /* Initially hide all sections */
+            display: none;
         }
         .content-section.active {
             display: block;
@@ -35,11 +35,11 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .stamp-collected {
-            background-color: #10b981; /* Tailwind emerald-500 */
+            background-color: #10b981;
             color: white;
         }
         .stamp-not-collected {
-            background-color: #ffffff; /* White */
+            background-color: #ffffff;
         }
         .modal {
             display: none;
@@ -85,7 +85,6 @@
             <p id="user-id-display" class="text-xs text-indigo-200 mt-1 text-center"></p>
         </header>
 
-        <!-- Tab Navigation -->
         <nav class="flex border-b border-gray-300 bg-gray-50">
             <button data-tab="home" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700 active">ホーム</button>
             <button data-tab="collect" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700">スタンプ獲得</button>
@@ -113,8 +112,16 @@
                     <h3 class="text-xl font-semibold text-indigo-700 mb-2">現在の獲得状況</h3>
                     <p id="home-stamp-progress" class="text-lg text-gray-700">0 / 0 個獲得</p>
                 </div>
-                 <div class="mt-6 text-center">
-                    <img src="https://placehold.co/600x300/E0E7FF/4F46E5?text=スタンプラリーイメージ" alt="スタンプラリーのイメージ" class="rounded-lg shadow-md mx-auto w-full max-w-md h-auto">
+
+                <!-- Home Section 内の「現在の獲得状況」の下あたりに追加 -->
+                <div class="mt-4 text-center">
+                    <button id="reset-stamps-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                       スタンプ進捗をリセット
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <img src="https://placehold.co/600x300/E0E7FF/4F46E5?text=スタンプラリーイメージ" alt="スタンプラリーのイメージ" class="rounded-lg shadow-md mx-auto w-full max-w-xl">
                 </div>
             </section>
 
@@ -148,36 +155,29 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, onSnapshot, writeBatch, Timestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // --- Firebase関連削除済み ---
+        // --- ↓↓↓ localStorageによる管理に全面書き換え ↓↓↓ ---
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-stamp-rally-app-v2'; // App IDを少し変更 (v2)
-
-        let app;
-        let auth;
-        let db;
-        let userId;
-        let isAuthReady = false;
-        let stampsData = [];
-        let unsubscribeStamps = null;
+        const STORAGE_KEY = 'stamp-rally-local-v2';
+        const USER_ID_KEY = 'stamp-rally-user-id';
 
         const initialStampPoints = [
-            { id: "tokyo-station", name: "東京駅", description: "日本の玄関口", latitude: 35.681236, longitude: 139.767125, detailedDescription: "赤レンガ造りの丸の内駅舎は国の重要文化財。駅周辺には商業施設も多く、日本の交通網の中心の一つです。", mapLink: "https://www.google.com/maps?q=35.681236,139.767125", isCollected: false, collectedAt: null },
-            { id: "shibuya-scramble", name: "渋谷スクランブル交差点", description: "世界最大級の交差点", latitude: 35.659520, longitude: 139.700433, detailedDescription: "1日に数十万人が行き交うと言われる渋谷の象徴。多くの映画やドラマの舞台にもなっています。周辺にはファッションビルや飲食店が立ち並びます。", mapLink: "https://www.google.com/maps?q=35.659520,139.700433", isCollected: false, collectedAt: null },
-            { id: "senso-ji", name: "浅草寺", description: "雷門で有名な古刹", latitude: 35.714765, longitude: 139.796656, detailedDescription: "創建は628年と伝わる都内最古の寺院。雷門や五重塔、仲見世通りなど見どころが多く、国内外から多くの観光客が訪れます。", mapLink: "https://www.google.com/maps?q=35.714765,139.796656", isCollected: false, collectedAt: null },
-            { id: "tokyo-tower", name: "東京タワー", description: "東京のシンボル", latitude: 35.658581, longitude: 139.745433, detailedDescription: "1958年に開業した高さ333mの電波塔。展望台からは東京の景色を一望でき、夜はライトアップも美しいです。", mapLink: "https://www.google.com/maps?q=35.658581,139.745433", isCollected: false, collectedAt: null },
-            { id: "skytree", name: "東京スカイツリー", description: "世界一高い電波塔", latitude: 35.710063, longitude: 139.8107, detailedDescription: "高さ634mを誇る自立式電波塔。天望デッキや天望回廊からの眺めは圧巻。商業施設「東京ソラマチ」も併設されています。", mapLink: "https://www.google.com/maps?q=35.710063,139.8107", isCollected: false, collectedAt: null },
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "赤レンガ造りの丸の内駅舎は国の重要文化財。" , mapLink: "https://goo.gl/maps/8P9zQn1T1M92"},
+            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "Fランの頂点大学附属高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "1日に約50万人が行き交う渋谷の象徴的スポット。", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
+            { id: "senso-ji", name: "浅草寺", description: "雷門で有名な古刹", latitude: 35.714765, longitude: 139.796656, detailedDescription: "創建は628年と伝わる都内最古の寺院。", mapLink: "https://goo.gl/maps/HKCwh6FDRqQ2"},
+            { id: "tokyo-tower", name: "東京タワー", description: "東京のシンボル", latitude: 35.658581, longitude: 139.745433, detailedDescription: "1958年に開業した高さ333mの電波塔。", mapLink: "https://goo.gl/maps/2HcMmnQb6nN2"},
+            { id: "skytree", name: "東京スカイツリー", description: "世界一高い電波塔", latitude: 35.710063, longitude: 139.8107, detailedDescription: "高さ634mを誇る自立式電波塔。", mapLink: "https://goo.gl/maps/6XnTTTfakLw"}
         ];
-        const COLLECTION_NAME = 'stamps-v2'; // Collection名も変更
+
+        let stampsData = [];
+        let userId = null;
 
         // UI Elements
         const loadingIndicator = document.getElementById('loading-indicator');
         const authMessageElement = document.getElementById('auth-message');
         const appMainContent = document.getElementById('app-main-content');
         const userIdDisplay = document.getElementById('user-id-display');
-        
+
         const homeContent = document.getElementById('home-content');
         const collectContent = document.getElementById('collect-content');
         const locationsContent = document.getElementById('locations-content');
@@ -204,7 +204,7 @@
             modal.style.display = "block";
         }
 
-        // Tab Navigation Logic
+        // タブ切り替え
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const targetTab = button.dataset.tab;
@@ -220,8 +220,8 @@
                 section.classList.toggle('active', section.id.startsWith(tabName));
             });
         }
-        
-        // Distance Calculation
+
+        // 距離計算
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = deg2rad(lat2 - lat1);
@@ -232,7 +232,41 @@
         }
         function deg2rad(deg) { return deg * (Math.PI / 180); }
 
-        // Update UI for all sections based on stampsData
+        // スタンプデータ読み込み
+        function loadStamps() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    // 初期スタンプとマージ
+                    return initialStampPoints.map(initial => {
+                        const saved = parsed.find(s => s.id === initial.id);
+                        return saved ? { ...initial, ...saved } : { ...initial, isCollected: false, collectedAt: null };
+                    });
+                } catch {
+                    return initialStampPoints.map(s => ({ ...s, isCollected: false, collectedAt: null }));
+                }
+            } else {
+                return initialStampPoints.map(s => ({ ...s, isCollected: false, collectedAt: null }));
+            }
+        }
+
+        // スタンプデータ保存
+        function saveStamps(stamps) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stamps));
+        }
+
+        // ユーザーID生成/取得
+        function getOrCreateUserId() {
+            let uid = localStorage.getItem(USER_ID_KEY);
+            if (!uid) {
+                uid = 'user-' + Math.random().toString(36).slice(2, 10);
+                localStorage.setItem(USER_ID_KEY, uid);
+            }
+            return uid;
+        }
+
+        // UI更新
         function updateAllUI() {
             updateHomeUI();
             updateCollectUI();
@@ -251,7 +285,7 @@
             stampsData.forEach(stamp => {
                 const card = document.createElement('div');
                 card.className = `stamp p-5 rounded-lg shadow-md flex flex-col items-center justify-between ${stamp.isCollected ? 'stamp-collected' : 'stamp-not-collected'}`;
-                
+
                 const nameElement = document.createElement('h3');
                 nameElement.className = 'text-lg font-semibold mb-1 text-center';
                 nameElement.textContent = stamp.name;
@@ -265,10 +299,10 @@
                 if (stamp.isCollected) {
                     const collectedText = document.createElement('p');
                     collectedText.className = 'text-sm font-medium text-center';
-                    collectedText.innerHTML = `獲得済み！<br><span class="text-xs">${stamp.collectedAt && stamp.collectedAt.seconds ? new Date(stamp.collectedAt.seconds * 1000).toLocaleDateString() : ''}</span>`;
+                    collectedText.innerHTML = `獲得済み！<br><span class="text-xs">${stamp.collectedAt ? new Date(stamp.collectedAt).toLocaleDateString() : ''}</span>`;
                     card.appendChild(collectedText);
                     const stampIcon = document.createElement('div');
-                    stampIcon.innerHTML = `<svg class="w-12 h-12 mx-auto mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.469 6.469a.75.75 0 00-1.06 0L8.75 13.844l-1.95-1.95a.75.75 0 10-1.06 1.06l2.5 2.5a.75.75 0 001.06 0l4.5-4.5a.75.75 0 000-1.06z" clip-rule="evenodd"></path></svg>`;
+                    stampIcon.innerHTML = `<svg class="w-12 h-12 mx-auto mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 21L18 29L30 13" clip-rule="evenodd"/></svg>`;
                     card.appendChild(stampIcon);
                 } else {
                     const collectButton = document.createElement('button');
@@ -280,7 +314,7 @@
                 stampListCollectElement.appendChild(card);
             });
         }
-        
+
         function updateLocationsUI() {
             if (!stampLocationsListElement || !stampsData) return;
             stampLocationsListElement.innerHTML = '';
@@ -288,8 +322,8 @@
                 const locationDiv = document.createElement('div');
                 locationDiv.className = `p-5 rounded-lg shadow-lg ${stamp.isCollected ? 'bg-emerald-50' : 'bg-white'}`;
 
-                let statusText = stamp.isCollected ? 
-                    `<span class="text-emerald-600 font-semibold">獲得済み</span> (${new Date(stamp.collectedAt.seconds * 1000).toLocaleDateString()})` : 
+                let statusText = stamp.isCollected ?
+                    `<span class="text-emerald-600 font-semibold">獲得済み</span> (${stamp.collectedAt ? new Date(stamp.collectedAt).toLocaleDateString() : ''})` :
                     '<span class="text-red-600 font-semibold">未獲得</span>';
 
                 locationDiv.innerHTML = `
@@ -297,15 +331,13 @@
                     <p class="text-sm text-gray-500 mb-1">状態: ${statusText}</p>
                     <p class="text-gray-700 mb-3 text-sm">${stamp.detailedDescription}</p>
                     <div class="flex items-center justify-start space-x-3">
-                        <a href="${stamp.mapLink}" target="_blank" rel="noopener noreferrer" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1.5 px-3 rounded-md transition duration-150">
-                            地図で見る
-                        </a>
-                        ${!stamp.isCollected ? `<button data-stamp-id="${stamp.id}" class="quick-collect-btn inline-block bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium py-1.5 px-3 rounded-md transition duration-150">ここで獲得チェック</button>` : ''}
+                        <a href="${stamp.mapLink}" target="_blank" rel="noopener noreferrer" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1.5 px-3 rounded-md transition">地図で見る</a>
+                        ${!stamp.isCollected ? `<button data-stamp-id="${stamp.id}" class="quick-collect-btn inline-block bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium py-1.5 px-3 rounded-md transition">いま獲得判定</button>` : ''}
                     </div>
                 `;
                 stampLocationsListElement.appendChild(locationDiv);
             });
-            // Add event listeners for newly created "quick-collect-btn"
+            // "いま獲得判定"ボタンのリスナー
             document.querySelectorAll('.quick-collect-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const stampId = e.target.dataset.stampId;
@@ -317,8 +349,7 @@
             });
         }
 
-
-        // Try to collect stamp
+        // スタンプ獲得処理
         async function tryCollectStamp(stampToCollect) {
             showModal("処理中...", "現在位置を取得し、スタンプ獲得を試みています。");
             modalCloseButton.disabled = true;
@@ -338,14 +369,19 @@
                 const acquisitionRange = 0.5; // 500m
 
                 if (distance <= acquisitionRange) {
-                    const stampDocRef = doc(db, `artifacts/${appId}/users/${userId}/${COLLECTION_NAME}`, stampToCollect.id);
-                    await setDoc(stampDocRef, { isCollected: true, collectedAt: Timestamp.now() }, { merge: true });
+                    const now = Date.now();
+                    stampsData = stampsData.map(stamp =>
+                        stamp.id === stampToCollect.id
+                            ? { ...stamp, isCollected: true, collectedAt: now }
+                            : stamp
+                    );
+                    saveStamps(stampsData);
                     showModal("スタンプ獲得！", `${stampToCollect.name} のスタンプを獲得しました！`);
+                    updateAllUI();
                 } else {
                     showModal("残念！", `${stampToCollect.name} にはまだ距離があります。(約 ${distance.toFixed(2)} km)`);
                 }
             } catch (error) {
-                console.error("Error collecting stamp - Message:", error.message, "Code:", error.code, "Details:", error);
                 let message = "スタンプ獲得処理中にエラーが発生しました。";
                 if (error.code === 1) message = "位置情報の取得が許可されませんでした。";
                 else if (error.code === 2) message = "位置情報が取得できませんでした（電波状況など）。";
@@ -356,112 +392,31 @@
             }
         }
 
-        // Load or initialize stamps from Firestore
-        async function loadOrInitializeStamps() {
-            if (!db || !userId) return;
-            const collectionPath = `artifacts/${appId}/users/${userId}/${COLLECTION_NAME}`;
-            const stampsCollectionRef = collection(db, collectionPath);
-
-            if (unsubscribeStamps) unsubscribeStamps();
-            
-            unsubscribeStamps = onSnapshot(stampsCollectionRef, (snapshot) => {
-                loadingIndicator.style.display = 'none'; // Hide loading indicator once data (or empty) is fetched
-                appMainContent.style.display = 'block'; // Show main content area
-
-                if (snapshot.empty) {
-                    console.log("No stamps found for user, initializing...");
-                    const batch = writeBatch(db);
-                    initialStampPoints.forEach(stamp => {
-                        const stampDocRef = doc(db, collectionPath, stamp.id);
-                        batch.set(stampDocRef, { ...stamp, isCollected: false, collectedAt: null });
-                    });
-                    batch.commit()
-                        .then(() => console.log("Initial stamps successfully written."))
-                        .catch(err => {
-                            console.error("Error writing initial stamps: ", err);
-                            showModal("初期化エラー", "スタンプデータの初期化に失敗しました。");
-                        });
-                    stampsData = initialStampPoints.map(s => ({...s, isCollected: false, collectedAt: null}));
-                } else {
-                    const fetchedStamps = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    stampsData = initialStampPoints.map(initial => {
-                        const fetched = fetchedStamps.find(fs => fs.id === initial.id);
-                        return fetched ? { ...initial, ...fetched } : { ...initial, isCollected: false, collectedAt: null };
-                    });
-                }
-                updateAllUI(); // Update all relevant UI parts
-                activateTab('home'); // Activate home tab by default after data load
-
-            }, (error) => {
-                console.error("Error fetching stamps from Firestore: ", error);
-                showModal("データ取得エラー", "スタンプ情報の取得に失敗しました。");
-                loadingIndicator.style.display = 'none';
-                authMessageElement.textContent = "スタンプデータの読み込みに失敗しました。";
-                authMessageElement.style.display = 'block';
-                appMainContent.style.display = 'none';
-            });
-        }
-        
-        // Initialize App Logic
-        async function initializeAppLogic() {
-            if (Object.keys(firebaseConfig).length === 0) {
-                console.error("Firebase config is empty.");
-                loadingIndicator.style.display = 'none';
-                authMessageElement.textContent = "Firebaseの設定が読み込まれていません。";
-                authMessageElement.style.display = 'block';
-                appMainContent.style.display = 'none';
-                return;
-            }
-
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                setLogLevel('debug');
-                await setPersistence(auth, browserLocalPersistence);
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        console.log("User signed in. UID:", userId);
-                        userIdDisplay.textContent = `ユーザーID: ${userId}`;
-                        authMessageElement.style.display = 'none';
-                        appMainContent.style.display = 'block'; // Show content area once auth is ready
-                        await loadOrInitializeStamps();
-                    } else {
-                        console.log("User not signed in. Attempting sign-in.");
-                        userIdDisplay.textContent = "ユーザー認証中...";
-                        try {
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        } catch (error) {
-                            console.error("Sign-in failed:", error);
-                            isAuthReady = false; userId = null;
-                            loadingIndicator.style.display = 'none';
-                            authMessageElement.textContent = "認証に失敗しました。アプリを利用できません。";
-                            authMessageElement.style.display = 'block';
-                            appMainContent.style.display = 'none';
-                            userIdDisplay.textContent = "認証エラー";
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Error initializing Firebase: ", error);
-                loadingIndicator.style.display = 'none';
-                authMessageElement.textContent = "Firebaseの初期化に失敗しました。";
-                authMessageElement.style.display = 'block';
-                appMainContent.style.display = 'none';
-            }
-        }
-
+        // 初期化
         document.addEventListener('DOMContentLoaded', () => {
-            appMainContent.style.display = 'none'; // Hide main content until auth and data are ready
-            initializeAppLogic();
+            appMainContent.style.display = 'none'; // 初期ロード時はメイン非表示
+            loadingIndicator.style.display = 'block';
+            setTimeout(() => {
+                userId = getOrCreateUserId();
+                userIdDisplay.textContent = `ユーザーID: ${userId}`;
+                stampsData = loadStamps();
+                updateAllUI();
+                activateTab('home');
+                loadingIndicator.style.display = 'none';
+                appMainContent.style.display = 'block';
+            }, 300); // ローディング演出のため少し遅延
         });
+
+        // 既存script内の一番下付近に追記
+const resetBtn = document.getElementById('reset-stamps-btn');
+resetBtn.onclick = () => {
+    if (confirm('スタンプ獲得状況をリセットします。本当によろしいですか？')) {
+        localStorage.removeItem(STORAGE_KEY);
+        stampsData = loadStamps(); // 初期化
+        updateAllUI();
+        showModal("リセット完了", "スタンプ進捗をリセットしました！");
+    }
+};
     </script>
 </body>
 </html>
