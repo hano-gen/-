@@ -120,9 +120,6 @@
                     </button>
                 </div>
                 
-                <div class="mt-6 text-center">
-                    <img src="https://placehold.co/600x300/E0E7FF/4F46E5?text=スタンプラリーイメージ" alt="スタンプラリーのイメージ" class="rounded-lg shadow-md mx-auto w-full max-w-xl">
-                </div>
             </section>
 
             <!-- Stamp Collection Section -->
@@ -164,10 +161,12 @@
         const initialStampPoints = [
             { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "赤レンガ造りの丸の内駅舎は国の重要文化財。" , mapLink: "https://goo.gl/maps/8P9zQn1T1M92"},
             { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "Fランの頂点大学附属高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "1日に約50万人が行き交う渋谷の象徴的スポット。", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
-            { id: "senso-ji", name: "浅草寺", description: "雷門で有名な古刹", latitude: 35.714765, longitude: 139.796656, detailedDescription: "創建は628年と伝わる都内最古の寺院。", mapLink: "https://goo.gl/maps/HKCwh6FDRqQ2"},
-            { id: "tokyo-tower", name: "東京タワー", description: "東京のシンボル", latitude: 35.658581, longitude: 139.745433, detailedDescription: "1958年に開業した高さ333mの電波塔。", mapLink: "https://goo.gl/maps/2HcMmnQb6nN2"},
-            { id: "skytree", name: "東京スカイツリー", description: "世界一高い電波塔", latitude: 35.710063, longitude: 139.8107, detailedDescription: "高さ634mを誇る自立式電波塔。", mapLink: "https://goo.gl/maps/6XnTTTfakLw"}
-        ];
+            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2" },
+            { id: "izushi-soba", name: "出石皿そば巡り", description: "名物そばを味わおう", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そばのお店を巡ってみよう。", mapLink: "https://goo.gl/maps/9bqfHqVbXGP2" },
+            { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集める出石の神社です。", mapLink: "https://goo.gl/maps/6kQf3b8Yt4y" },
+            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の家老屋敷を復元した建物です。", mapLink: "https://goo.gl/maps/N8bP4i6G3k62" },
+            { id: "izushi-meijikan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461655, longitude: 134.875222, detailedDescription: "明治時代に建てられた芝居小屋で、今も公演が行われています。", mapLink: "https://goo.gl/maps/7n1w9UKCSGm" }
+];
 
         let stampsData = [];
         let userId = null;
