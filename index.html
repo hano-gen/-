@@ -113,12 +113,37 @@
                     <p id="home-stamp-progress" class="text-lg text-gray-700">0 / 0 個獲得</p>
                 </div>
 
+                <div class="mt-2 text-center">
+                    <button id="share-x-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                        X（旧Twitter）でシェア
+                    </button>
+                </div>
+
                 <!-- Home Section 内の「現在の獲得状況」の下あたりに追加 -->
                 <div class="mt-4 text-center">
                     <button id="reset-stamps-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
                        スタンプ進捗をリセット
                     </button>
                 </div>
+                <div class="mt-10">
+                <h2 class="text-xl font-bold text-indigo-700 mb-4">よくある質問（Q&A）</h2>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow mb-2">
+                    <p class="font-semibold text-indigo-900">Q. スタンプは何個まで集められますか？</p>
+                    <p class="text-gray-700">A. 現在登録されている全てのスポットでスタンプを集めることができます。</p>
+                 </div>
+                 <div class="bg-indigo-50 p-4 rounded-lg shadow mb-2">
+                    <p class="font-semibold text-indigo-900">Q. スタンプのリセットはどうやって行いますか？</p>
+                    <p class="text-gray-700">A. 「スタンプ進捗をリセット」ボタンを押すと、全てのスタンプ進捗が初期化されます。</p>
+                 </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow mb-2">
+                    <p class="font-semibold text-indigo-900">Q. スマートフォンでも使えますか？</p>
+                    <p class="text-gray-700">A. はい。スマートフォン、タブレット、PCなど幅広い端末でご利用いただけます。</p>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow mb-2">
+                    <p class="font-semibold text-indigo-900">Q. 位置情報が取得できない場合は？</p>
+                    <p class="text-gray-700">A. 端末の位置情報サービスがONになっているか、ブラウザの位置情報許可がされているかご確認ください。</p>
+                </div>
+                 </div>
                 
             </section>
 
@@ -159,14 +184,14 @@
         const USER_ID_KEY = 'stamp-rally-user-id';
 
         const initialStampPoints = [
-            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "赤レンガ造りの丸の内駅舎は国の重要文化財。" , mapLink: "https://goo.gl/maps/8P9zQn1T1M92"},
-            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "Fランの頂点大学附属高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "1日に約50万人が行き交う渋谷の象徴的スポット。", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です。" , mapLink: "https://goo.gl/maps/8P9zQn1T1M92"},
+            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
             { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2" },
             { id: "izushi-soba", name: "出石皿そば巡り", description: "名物そばを味わおう", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そばのお店を巡ってみよう。", mapLink: "https://goo.gl/maps/9bqfHqVbXGP2" },
             { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集める出石の神社です。", mapLink: "https://goo.gl/maps/6kQf3b8Yt4y" },
             { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の家老屋敷を復元した建物です。", mapLink: "https://goo.gl/maps/N8bP4i6G3k62" },
             { id: "izushi-meijikan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461655, longitude: 134.875222, detailedDescription: "明治時代に建てられた芝居小屋で、今も公演が行われています。", mapLink: "https://goo.gl/maps/7n1w9UKCSGm" }
-];
+        ];
 
         let stampsData = [];
         let userId = null;
@@ -406,16 +431,28 @@
             }, 300); // ローディング演出のため少し遅延
         });
 
+        const shareBtn = document.getElementById('share-x-btn');
+        if (shareBtn) {
+        shareBtn.onclick = () => {
+            const collectedCount = stampsData.filter(s => s.isCollected).length;
+            const totalCount = stampsData.length;
+            const text = `#出石スタンプラリー\n${collectedCount} / ${totalCount} のスタンプを獲得しました！\nみんなも挑戦してみよう！`;
+            const url = encodeURIComponent(window.location.href);
+            const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`;
+            window.open(shareUrl, '_blank');
+        };
+        }
+
         // 既存script内の一番下付近に追記
-const resetBtn = document.getElementById('reset-stamps-btn');
-resetBtn.onclick = () => {
-    if (confirm('スタンプ獲得状況をリセットします。本当によろしいですか？')) {
-        localStorage.removeItem(STORAGE_KEY);
-        stampsData = loadStamps(); // 初期化
-        updateAllUI();
-        showModal("リセット完了", "スタンプ進捗をリセットしました！");
-    }
-};
+        const resetBtn = document.getElementById('reset-stamps-btn');
+        resetBtn.onclick = () => {
+            if (confirm('スタンプ獲得状況をリセットします。本当によろしいですか？')) {
+                localStorage.removeItem(STORAGE_KEY);
+                stampsData = loadStamps(); // 初期化
+                updateAllUI();
+                showModal("リセット完了", "スタンプ進捗をリセットしました！");
+            }
+        };
     </script>
 </body>
 </html>
