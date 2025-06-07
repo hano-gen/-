@@ -1,0 +1,58 @@
+<!--
+スタンプ獲得場所の詳細ページの型
+Tailwindcss 使用
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>スタンプ獲得場所テンプレ | 位置情報スタンプラリー</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-sky-100 to-indigo-200 min-h-screen flex flex-col items-center py-6 px-2">
+    <div class="w-full max-w-lg bg-white shadow-xl rounded-lg overflow-hidden">
+        <!-- 写真（画像） -->
+        <div class="w-full h-56 bg-gray-200 flex items-center justify-center">
+            <img src="PLACEHOLDER_IMAGE_URL" alt="建物名" class="object-cover w-full h-full">
+        </div>
+        <!-- 詳細本文 -->
+        <div class="p-6">
+            <!-- 建物名 -->
+            <h1 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-2 text-center">建物名</h1>
+            <!-- 説明 -->
+            <p class="text-gray-700 text-base mb-4 text-center">ここに説明文</p>
+            <!-- 詳細情報 -->
+            <div class="bg-indigo-50 rounded-lg shadow-inner p-4 mb-4">
+                <h2 class="text-lg font-semibold text-indigo-700 mb-2">詳細情報</h2>
+                <!-- 情報の種類は場所に合わせた情報を柔軟に -->
+                <ul class="text-gray-800 text-sm space-y-1">
+                    <li><span class="font-semibold">所在地：</span>兵庫県豊岡市出石町（例）</li>
+                    <li><span class="font-semibold">アクセス：</span>JR豊岡駅よりバスで30分（例）</li>
+                    <li><span class="font-semibold">営業時間：</span>9:00～17:00（例）</li>
+                    <li><span class="font-semibold">公式サイト：</span>
+                        <a href="https://example.com" target="_blank" class="text-blue-600 underline hover:text-blue-800">https://example.com</a>
+                    </li>
+                    <li><span class="font-semibold">Googleマップ：</span>
+                        <a href="https://maps.google.com" target="_blank" class="text-blue-600 underline hover:text-blue-800">地図で見る</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- 戻るボタン -->
+            <div class="text-center mt-6">
+                <a href="index.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition">
+                    一覧に戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

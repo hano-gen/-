@@ -184,7 +184,7 @@
         const USER_ID_KEY = 'stamp-rally-user-id';
 
         const initialStampPoints = [
-            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です。" , mapLink: "https://goo.gl/maps/8P9zQn1T1M92"},
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です。", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html"},
             { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
             { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2" },
             { id: "izushi-soba", name: "出石皿そば巡り", description: "名物そばを味わおう", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そばのお店を巡ってみよう。", mapLink: "https://goo.gl/maps/9bqfHqVbXGP2" },
@@ -351,7 +351,9 @@
                     '<span class="text-red-600 font-semibold">未獲得</span>';
 
                 locationDiv.innerHTML = `
-                    <h3 class="text-xl font-semibold text-indigo-800 mb-2">${stamp.name}</h3>
+                    <h3 class="text-xl font-semibold text-indigo-800 mb-2">
+                        <a href="${stamp.detailPage}" class="hover:underline text-blue-700">${stamp.name}</a>
+                    </h3>
                     <p class="text-sm text-gray-500 mb-1">状態: ${statusText}</p>
                     <p class="text-gray-700 mb-3 text-sm">${stamp.detailedDescription}</p>
                     <div class="flex items-center justify-start space-x-3">
