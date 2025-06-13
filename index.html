@@ -186,7 +186,7 @@
         const initialStampPoints = [
             { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です。", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html"},
             { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
-            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2" },
+            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2", detailPage: "sukyoji-temple.html"},
             { id: "izushi-soba", name: "出石皿そば巡り", description: "名物そばを味わおう", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そばのお店を巡ってみよう。", mapLink: "https://goo.gl/maps/9bqfHqVbXGP2" },
             { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集める出石の神社です。", mapLink: "https://goo.gl/maps/6kQf3b8Yt4y" },
             { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の家老屋敷を復元した建物です。", mapLink: "https://goo.gl/maps/N8bP4i6G3k62" },
@@ -427,6 +427,15 @@
                 userIdDisplay.textContent = `ユーザーID: ${userId}`;
                 stampsData = loadStamps();
                 updateAllUI();
+
+                const params = new URLSearchParams(window.location.search);
+                const tab = params.get('tab');
+                if(tab && (tab === 'locations' || tab === 'home' || tab === 'collect')) {
+                    activateTab(tab);
+                } else {
+                    activateTab('home');
+                }
+                
                 activateTab('home');
                 loadingIndicator.style.display = 'none';
                 appMainContent.style.display = 'block';
