@@ -27,20 +27,66 @@
         .content-section.active {
             display: block;
         }
-        .stamp {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* スタンプ台・丸型デザイン用のスタイル */
+        .stamp-stand-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
         }
-        .stamp:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        .stamp-stand-collected {
+            border-color: #e11d48;
+            box-shadow: 0 0 0 4px #fda4af88;
         }
-        .stamp-collected {
-            background-color: #10b981;
-            color: white;
+        .stamp-stand-img {
+            width: 80px;
+            height: 80px;
+            opacity: 0.2;
+            filter: grayscale(100%);
+            transition: filter 0.3s, opacity 0.3s;
         }
-        .stamp-not-collected {
-            background-color: #ffffff;
+        .stamp-stand-collected .stamp-stand-img {
+            opacity: 1;
+            filter: none;
+            animation: stamp-pop 0.35s cubic-bezier(.33,1.7,.67,1) 1;
         }
+        @keyframes stamp-pop {
+            0%   { transform: scale(0.5) rotate(-8deg);}
+            60%  { transform: scale(1.08) rotate(5deg);}
+            80%  { transform: scale(0.95) rotate(-3deg);}
+            100% { transform: scale(1)   rotate(0);}
+        }
+        .stamp-stand-label {
+            display: block;
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.92rem;
+            color: #4b5563;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+        .stamp-stand-collected .stamp-stand-label {
+            color: #e11d48;
+            font-weight: bold;
+        }
+        .stamp-stand-btn {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .stamp-stand-btn:focus { outline: 2px solid #6366f1; }
         .modal {
             display: none;
             position: fixed;
@@ -150,8 +196,8 @@
             <!-- Stamp Collection Section -->
             <section id="collect-content" class="content-section">
                 <h2 class="text-2xl font-semibold text-indigo-700 mb-6">スタンプを獲得する</h2>
-                <div id="stamp-list-collect" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <!-- スタンプカード（獲得用）がここに挿入されます -->
+                <div id="stamp-stand" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
+                    <!-- JSでスタンプ台が挿入されます -->
                 </div>
             </section>
 
@@ -182,15 +228,17 @@
 
         const STORAGE_KEY = 'stamp-rally-local-v2';
         const USER_ID_KEY = 'stamp-rally-user-id';
+        // 添付画像を public/shinkoro-stamp.png などに保存してください
+        const defaultStampImgSrc = "./shinkoro-stamp.png"; // Image 1
 
         const initialStampPoints = [
-            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です。", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html"},
-            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://goo.gl/maps/C5N7zUQ9kF52"},
-            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来でも有名な歴史あるお寺です。", mapLink: "https://goo.gl/maps/Ck1jXv3f4xL2", detailPage: "sukyoji-temple.html"},
-            { id: "izushi-soba", name: "出石皿そば巡り", description: "名物そばを味わおう", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そばのお店を巡ってみよう。", mapLink: "https://goo.gl/maps/9bqfHqVbXGP2" },
-            { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集める出石の神社です。", mapLink: "https://goo.gl/maps/6kQf3b8Yt4y" },
-            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の家老屋敷を復元した建物です。", mapLink: "https://goo.gl/maps/N8bP4i6G3k62" },
-            { id: "izushi-meijikan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461655, longitude: 134.875222, detailedDescription: "明治時代に建てられた芝居小屋で、今も公演が行われています。", mapLink: "https://goo.gl/maps/7n1w9UKCSGm" }
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です", mapLink: "#", detailPage: "shinkoro.html", stampImage: defaultStampImgSrc },
+            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
+            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来", mapLink: "#", detailPage: "sukyoji-temple.html", /*stampImage: ""*/ },
+            { id: "izushi-jo", name: "出石城跡", description: "説明未定", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そば巡り", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
+            { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集めてきた神社", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
+            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の雰囲気が味わえる建物", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
+            { id: "izushi-meijikan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461655, longitude: 134.875222, detailedDescription: "明治時代に建てられた芝居小屋", mapLink: "#", detailPage: "#", /*stampImage: ""*/ }
         ];
 
         let stampsData = [];
@@ -208,7 +256,8 @@
         const contentSections = [homeContent, collectContent, locationsContent];
 
         const homeStampProgressElement = document.getElementById('home-stamp-progress');
-        const stampListCollectElement = document.getElementById('stamp-list-collect');
+        const stampListCollectElement = document.getElementById('stamp-list-collect'); // ※旧UI用
+        const stampStandElement = document.getElementById('stamp-stand'); // 新スタンプ台
         const stampLocationsListElement = document.getElementById('stamp-locations-list');
 
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -293,7 +342,7 @@
         // UI更新
         function updateAllUI() {
             updateHomeUI();
-            updateCollectUI();
+            updateStampStandUI();
             updateLocationsUI();
         }
 
@@ -303,39 +352,44 @@
             homeStampProgressElement.textContent = `${collectedCount} / ${stampsData.length} 個獲得`;
         }
 
-        function updateCollectUI() {
-            if (!stampListCollectElement || !stampsData) return;
-            stampListCollectElement.innerHTML = '';
+        // 新しいスタンプ台UI（丸形グリッド型/アニメーション対応）
+        function updateStampStandUI() {
+            if (!stampStandElement || !stampsData) return;
+            stampStandElement.innerHTML = '';
             stampsData.forEach(stamp => {
-                const card = document.createElement('div');
-                card.className = `stamp p-5 rounded-lg shadow-md flex flex-col items-center justify-between ${stamp.isCollected ? 'stamp-collected' : 'stamp-not-collected'}`;
+                // スタンプ画像（今後スポットごとに差し替え可）
+                const imgSrc = stamp.stampImage || defaultStampImgSrc;
 
-                const nameElement = document.createElement('h3');
-                nameElement.className = 'text-lg font-semibold mb-1 text-center';
-                nameElement.textContent = stamp.name;
-                card.appendChild(nameElement);
+                // スタンプ台(circle)
+                const circle = document.createElement('div');
+                circle.className = `stamp-stand-circle${stamp.isCollected ? ' stamp-stand-collected' : ''}`;
 
-                const descriptionElement = document.createElement('p');
-                descriptionElement.className = `text-xs mb-3 text-center ${stamp.isCollected ? 'text-gray-100' : 'text-gray-600'}`;
-                descriptionElement.textContent = stamp.description;
-                card.appendChild(descriptionElement);
+                // スタンプ画像
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = stamp.name;
+                img.className = 'stamp-stand-img';
+                circle.appendChild(img);
 
-                if (stamp.isCollected) {
-                    const collectedText = document.createElement('p');
-                    collectedText.className = 'text-sm font-medium text-center';
-                    collectedText.innerHTML = `獲得済み！<br><span class="text-xs">${stamp.collectedAt ? new Date(stamp.collectedAt).toLocaleDateString() : ''}</span>`;
-                    card.appendChild(collectedText);
-                    const stampIcon = document.createElement('div');
-                    stampIcon.innerHTML = `<svg class="w-12 h-12 mx-auto mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 21L18 29L30 13" clip-rule="evenodd"/></svg>`;
-                    card.appendChild(stampIcon);
-                } else {
-                    const collectButton = document.createElement('button');
-                    collectButton.textContent = 'スタンプ獲得チェック';
-                    collectButton.className = 'mt-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-lg text-sm transition duration-150 ease-in-out w-full';
-                    collectButton.onclick = () => tryCollectStamp(stamp);
-                    card.appendChild(collectButton);
+                // スタンプ押印ボタン（未獲得時のみ）
+                if (!stamp.isCollected) {
+                    const btn = document.createElement('button');
+                    btn.className = 'stamp-stand-btn';
+                    btn.title = `${stamp.name}のスタンプを押す`;
+                    btn.onclick = () => tryCollectStamp(stamp);
+                    circle.appendChild(btn);
                 }
-                stampListCollectElement.appendChild(card);
+
+                // ラベル
+                const label = document.createElement('span');
+                label.className = 'stamp-stand-label';
+                label.textContent = stamp.name;
+                // 外枠div
+                const extDiv = document.createElement('div');
+                extDiv.appendChild(circle);
+                extDiv.appendChild(label);
+
+                stampStandElement.appendChild(extDiv);
             });
         }
 
@@ -377,46 +431,50 @@
 
         // スタンプ獲得処理
         async function tryCollectStamp(stampToCollect) {
-            showModal("処理中...", "現在位置を取得し、スタンプ獲得を試みています。");
-            modalCloseButton.disabled = true;
+        showModal("処理中...", "現在位置を取得し、スタンプ獲得を試みています。");
+        modalCloseButton.disabled = true;
 
-            if (!navigator.geolocation) {
-                showModal("エラー", "お使いのブラウザは位置情報サービスに対応していません。");
-                modalCloseButton.disabled = false;
-                return;
-            }
-
-            try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-                });
-                const { latitude: userLat, longitude: userLon } = position.coords;
-                const distance = getDistance(userLat, userLon, stampToCollect.latitude, stampToCollect.longitude);
-                const acquisitionRange = 0.5; // 500m
-
-                if (distance <= acquisitionRange) {
-                    const now = Date.now();
-                    stampsData = stampsData.map(stamp =>
-                        stamp.id === stampToCollect.id
-                            ? { ...stamp, isCollected: true, collectedAt: now }
-                            : stamp
-                    );
-                    saveStamps(stampsData);
-                    showModal("スタンプ獲得！", `${stampToCollect.name} のスタンプを獲得しました！`);
-                    updateAllUI();
-                } else {
-                    showModal("残念！", `${stampToCollect.name} にはまだ距離があります。(約 ${distance.toFixed(2)} km)`);
-                }
-            } catch (error) {
-                let message = "スタンプ獲得処理中にエラーが発生しました。";
-                if (error.code === 1) message = "位置情報の取得が許可されませんでした。";
-                else if (error.code === 2) message = "位置情報が取得できませんでした（電波状況など）。";
-                else if (error.code === 3) message = "位置情報の取得がタイムアウトしました。";
-                showModal("エラー", message);
-            } finally {
-                modalCloseButton.disabled = false;
-            }
+        if (!navigator.geolocation) {
+            showModal("エラー", "お使いのブラウザは位置情報サービスに対応していません。");
+            modalCloseButton.disabled = false;
+            return;
         }
+
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+            });
+            const { latitude: userLat, longitude: userLon } = position.coords;
+            const distance = getDistance(userLat, userLon, stampToCollect.latitude, stampToCollect.longitude);
+            const acquisitionRange = 0.1; // 範囲
+
+            if (distance <= acquisitionRange) {
+                const now = Date.now();
+                stampsData = stampsData.map(stamp =>
+                    stamp.id === stampToCollect.id
+                        ? { ...stamp, isCollected: true, collectedAt: now }
+                        : stamp
+                );
+                saveStamps(stampsData);
+
+                // モーダルを閉じてスタンプ台のアニメーションを見せる
+                modal.style.display = "none";
+                modalCloseButton.disabled = false;
+                updateAllUI();
+                // ダイアログは出さない
+            } else {
+                showModal("残念！", `${stampToCollect.name} にはまだ距離があります。(約 ${distance.toFixed(2)} km)`);
+            }
+        } catch (error) {
+            let message = "スタンプ獲得処理中にエラーが発生しました。";
+            if (error.code === 1) message = "位置情報の取得が許可されませんでした。";
+            else if (error.code === 2) message = "位置情報が取得できませんでした（電波状況など）。";
+            else if (error.code === 3) message = "位置情報の取得がタイムアウトしました。";
+            showModal("エラー", message);
+        } finally {
+            modalCloseButton.disabled = false;
+        }
+    }
 
         // 初期化
         document.addEventListener('DOMContentLoaded', () => {
@@ -436,7 +494,6 @@
                     activateTab('home');
                 }
                 
-                activateTab('home');
                 loadingIndicator.style.display = 'none';
                 appMainContent.style.display = 'block';
             }, 300); // ローディング演出のため少し遅延
