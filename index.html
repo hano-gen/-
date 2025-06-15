@@ -145,7 +145,7 @@
         <div id="auth-message" class="hidden text-center py-12 px-6">
             <p class="text-red-600 font-semibold">認証情報がありません。アプリを正しく利用できません。</p>
         </div>
-        
+
         <main id="app-main-content" class="p-6 md:p-8">
             <!-- Home Section -->
             <section id="home-content" class="content-section active">
@@ -190,7 +190,7 @@
                     <p class="text-gray-700">A. 端末の位置情報サービスがONになっているか、ブラウザの位置情報許可がされているかご確認ください。</p>
                 </div>
                  </div>
-                
+
             </section>
 
             <!-- Stamp Collection Section -->
@@ -232,13 +232,13 @@
         const defaultStampImgSrc = "./images/shinkoro-stamp.png"; // Image 1
 
         const initialStampPoints = [
-            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です", mapLink: "#", detailPage: "shinkoro.html", stampImage: "./images/shinkoro-stamp.png" },
-            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
-            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来", mapLink: "#", detailPage: "sukyoji-temple.html", /*stampImage: ""*/ },
-            { id: "izushi-jo", name: "出石城跡", description: "説明未定", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そば巡り", mapLink: "#", detailPage: "#", stampImage: "./images/joseki_stamp.png" },
-            { id: "sasaki-shuzo", name: "但馬國一宮・酒垂神社", description: "歴史ある神社", latitude: 35.459998, longitude: 134.868361, detailedDescription: "古くから信仰を集めてきた神社", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
-            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の雰囲気が味わえる建物", mapLink: "#", detailPage: "#", /*stampImage: ""*/ },
-            { id: "izushi-meijikan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461655, longitude: 134.875222, detailedDescription: "明治時代に建てられた芝居小屋", mapLink: "#", detailPage: "#", stampImage: "./images/eirakukan_stamp.png" }
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html", stampImage: "./images/shinkoro-stamp.png" },
+            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://maps.app.goo.gl/4KVAbEH2a8eGxmSAA", detailPage: "#", /*stampImage: ""*/ },
+            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来", mapLink: "https://maps.app.goo.gl/G4tDywEmFR7ttHsf9", detailPage: "sukyoji-temple.html", /*stampImage: ""*/ },
+            { id: "izushi-jo", name: "出石城跡", description: "説明未定", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そば巡り", mapLink: "https://maps.app.goo.gl/rjvib5be2Y8pm2D9A", detailPage: "joseki.html", stampImage: "./images/joseki_stamp.png" },
+            { id: "izushi-meijikan", name: "出石明治館", description: "レトロな洋館", latitude: 35.462166, longitude: 134.876885, detailedDescription: "元は明治20年建築の郡役所", mapLink: "https://maps.app.goo.gl/uqXLP2SFSwAEr4MH6", detailPage: "meijikan.html", stampImage:"./images/meijikan_stamp.png" },
+            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の雰囲気が味わえる建物", mapLink: "https://maps.app.goo.gl/hCsSxqiEzhb3ockb9", detailPage: "#", /*stampImage: ""*/ },
+            { id: "izushi-eirakukan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461953, longitude: 134.871503, detailedDescription: "明治時代に建てられた芝居小屋", mapLink: "https://maps.app.goo.gl/4KVAbEH2a8eGxmSAA", detailPage: "#", stampImage: "./images/eirakukan_stamp.png" }
         ];
 
         let stampsData = [];
@@ -493,7 +493,7 @@
                 } else {
                     activateTab('home');
                 }
-                
+
                 loadingIndicator.style.display = 'none';
                 appMainContent.style.display = 'block';
             }, 300); // ローディング演出のため少し遅延
