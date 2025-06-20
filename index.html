@@ -446,7 +446,7 @@
             });
             const { latitude: userLat, longitude: userLon } = position.coords;
             const distance = getDistance(userLat, userLon, stampToCollect.latitude, stampToCollect.longitude);
-            const acquisitionRange = 3.0; // 範囲
+            const acquisitionRange = 0.15; // 範囲
 
             if (distance <= acquisitionRange) {
                 const now = Date.now();
