@@ -27,7 +27,6 @@
         .content-section.active {
             display: block;
         }
-        /* スタンプ台・丸型デザイン用のスタイル */
         .stamp-stand-circle {
             width: 90px;
             height: 90px;
@@ -123,32 +122,41 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-sky-100 to-indigo-200 min-h-screen flex flex-col items-center p-4">
+<body class="relative min-h-screen bg-black">
+    <!-- ヒーローセクション -->
+    <section id="hero" class="fixed inset-0 w-full h-full z-0">
+      <img src="./images/joseki_hero.jpeg" alt="出石城跡" class="w-full h-full object-cover hero-img" />
+      <img src="./images/shinkoro_hero.jpeg" alt="辰鼓楼" class="w-full h-full object-cover hero-img" />
+      <img src="./images/torii_hero.jpeg" alt="鳥居" class="w-full h-full object-cover hero-img" />
+      <div class="absolute inset-0 flex items-center justify-center">
+        <h1 class="text-white text-3xl md:text-4xl font-bold drop-shadow-lg text-center px-4 bg-black/40 rounded-lg">
+          位置情報スタンプラリー
+        </h1>
+      </div>
+    </section>
 
-    <div id="app-container" class="w-full max-w-3xl bg-white shadow-xl rounded-lg">
-        <header class="bg-indigo-700 text-white p-6 rounded-t-lg">
-            <h1 class="text-3xl md:text-4xl font-bold text-center">位置情報スタンプラリー</h1>
-            <p id="user-id-display" class="text-xs text-indigo-200 mt-1 text-center"></p>
-        </header>
-
-        <nav class="flex border-b border-gray-300 bg-gray-50">
-            <button data-tab="home" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700 active">ホーム</button>
-            <button data-tab="collect" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700">スタンプ獲得</button>
-            <button data-tab="locations" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700">獲得可能場所</button>
-        </nav>
-
-        <div id="loading-indicator" class="text-center py-12">
-            <div class="loader"></div>
-            <p class="text-indigo-600 font-semibold">データを読み込み中...</p>
-        </div>
-
-        <div id="auth-message" class="hidden text-center py-12 px-6">
-            <p class="text-red-600 font-semibold">認証情報がありません。アプリを正しく利用できません。</p>
-        </div>
-
-        <main id="app-main-content" class="p-6 md:p-8">
-            <!-- Home Section -->
-            <section id="home-content" class="content-section active">
+    <main class="relative z-10 w-full mt-[100vh]">
+      <!-- 外側白影ボックス -->
+    <div class="w-full min-h-screen flex justify-center items-start bg-transparent">
+     <div class="bg-white/50 shadow-2xl rounded-3xl w-full max-w-3xl mx-auto mt-8 mb-8 px-2 pt-1 pb-1">
+       <!-- 真っ白なボックス（中央） -->
+       <div class="bg-white rounded-2xl w-full mx-auto overflow-hidden">
+            <!-- タブナビゲーションも白影内に含める -->
+            <nav class="flex border-b border-gray-300 bg-gray-50 rounded-t-2xl overflow-hidden">
+              <button data-tab="home" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700 active">ホーム</button>
+              <button data-tab="collect" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700">スタンプ獲得</button>
+              <button data-tab="locations" class="tab-button flex-1 py-3 px-2 md:py-4 md:px-4 text-center font-medium text-gray-700">獲得可能場所</button>
+            </nav>
+            <div id="loading-indicator" class="text-center py-12">
+              <div class="loader"></div>
+              <p class="text-indigo-600 font-semibold">データを読み込み中...</p>
+            </div>
+            <div id="auth-message" class="hidden text-center py-12 px-6">
+              <p class="text-red-600 font-semibold">認証情報がありません。アプリを正しく利用できません。</p>
+            </div>
+            <div id="app-main-content" class="p-6 md:p-8">
+              <!-- Home Section -->
+              <section id="home-content" class="content-section active">
                 <h2 class="text-2xl font-semibold text-indigo-700 mb-4">ようこそ！</h2>
                 <p class="text-gray-700 mb-6">
                     このアプリでは、指定された場所に近づいてスタンプを集めることができます。
@@ -165,7 +173,6 @@
                     </button>
                 </div>
 
-                <!-- Home Section 内の「現在の獲得状況」の下あたりに追加 -->
                 <div class="mt-4 text-center">
                     <button id="reset-stamps-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
                        スタンプ進捗をリセット
@@ -208,8 +215,10 @@
                     <!-- スタンプ場所詳細がここに挿入されます -->
                 </div>
             </section>
-        </main>
-    </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
     <!-- モーダル -->
     <div id="info-modal" class="modal">
@@ -223,21 +232,36 @@
     </div>
 
     <script type="module">
-        // --- Firebase関連削除済み ---
-        // --- ↓↓↓ localStorageによる管理に全面書き換え ↓↓↓ ---
+        // ヒーロー画像スライド
+        document.addEventListener('DOMContentLoaded', () => {
+          const imgs = document.querySelectorAll('.hero-img');
+          let idx = 0;
+          imgs.forEach((img, i) => {
+            img.style.opacity = (i === 0) ? "1" : "0";
+            img.style.transition = "opacity 0.7s";
+            img.style.position = "absolute";
+            img.style.left = 0;
+            img.style.top = 0;
+          });
+          setInterval(() => {
+            imgs.forEach((img, i) => {
+              img.style.opacity = (i === idx) ? "1" : "0";
+            });
+            idx = (idx + 1) % imgs.length;
+          }, 3000);
+        });
 
         const STORAGE_KEY = 'stamp-rally-local-v2';
         const USER_ID_KEY = 'stamp-rally-user-id';
-        // 添付画像を public/shinkoro-stamp.png などに保存してください
-        const defaultStampImgSrc = "./images/shinkoro-stamp.png"; // Image 1
+        const defaultStampImgSrc = "./images/shinkoro_stamp.png";
 
         const initialStampPoints = [
-            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html", stampImage: "./images/shinkoro-stamp.png" },
-            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://maps.app.goo.gl/4KVAbEH2a8eGxmSAA", detailPage: "#", /*stampImage: ""*/ },
-            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.460421, longitude: 134.877893, detailedDescription: "沢庵漬けの由来", mapLink: "https://maps.app.goo.gl/G4tDywEmFR7ttHsf9", detailPage: "sukyoji-temple.html", /*stampImage: ""*/ },
-            { id: "izushi-jo", name: "出石城跡", description: "説明未定", latitude: 35.463234, longitude: 134.873448, detailedDescription: "出石の名物・皿そば巡り", mapLink: "https://maps.app.goo.gl/rjvib5be2Y8pm2D9A", detailPage: "joseki.html", stampImage: "./images/joseki_stamp.png" },
-            { id: "izushi-meijikan", name: "出石明治館", description: "レトロな洋館", latitude: 35.462166, longitude: 134.876885, detailedDescription: "元は明治20年建築の郡役所", mapLink: "https://maps.app.goo.gl/uqXLP2SFSwAEr4MH6", detailPage: "meijikan.html", stampImage:"./images/meijikan_stamp.png" },
-            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.464002, longitude: 134.877022, detailedDescription: "江戸時代の雰囲気が味わえる建物", mapLink: "https://maps.app.goo.gl/hCsSxqiEzhb3ockb9", detailPage: "#", /*stampImage: ""*/ },
+            { id: "shinkoro", name: "辰鼓楼", description: "出石の代名詞", latitude: 35.46215626, longitude: 134.87431924, detailedDescription: "出石の代名詞と呼べる建築物です", mapLink: "https://maps.app.goo.gl/2w9A7dghPr519Ajt9", detailPage: "shinkoro.html", stampImage: "./images/shinkoro_stamp.png" },
+            { id: "shibuya-scramble", name: "近畿大学附属豊岡高等学校", description: "豊岡市の高校", latitude: 35.53701, longitude: 134.806295, detailedDescription: "高校", mapLink: "https://maps.app.goo.gl/4KVAbEH2a8eGxmSAA", detailPage: "#", },
+            { id: "sukyoji-temple", name: "宗鏡寺（沢庵寺）", description: "沢庵和尚ゆかりの寺", latitude: 35.463231, longitude: 134.879634, detailedDescription: "沢庵漬けの由来", mapLink: "https://maps.app.goo.gl/G4tDywEmFR7ttHsf9", detailPage: "sukyoji-temple.html", stampImage: "./images/sukyoji_stamp.png" },
+            { id: "izushi-jo", name: "出石城跡", description: "説明未定", latitude: 35.46059, longitude: 134.87461, detailedDescription: "出石の名物・皿そば巡り", mapLink: "https://maps.app.goo.gl/rjvib5be2Y8pm2D9A", detailPage: "joseki.html", stampImage: "./images/joseki_stamp.png" },
+            { id: "izushi-meijikan", name: "出石明治館", description: "レトロな洋館", latitude: 35.46211, longitude: 134.876885, detailedDescription: "元は明治20年建築の郡役所", mapLink: "https://maps.app.goo.gl/uqXLP2SFSwAEr4MH6", detailPage: "meijikan.html", stampImage:"./images/meijikan_stamp.png" },
+            { id: "izushi-karou-yashiki", name: "家老屋敷", description: "武家屋敷の雰囲気が味わえる", latitude: 35.46190, longitude: 134.87319, detailedDescription: "江戸時代の雰囲気が味わえる建物", mapLink: "https://maps.app.goo.gl/hCsSxqiEzhb3ockb9", detailPage: "#", stampImage:"./images/karoyashiki_stamp.png" },
             { id: "izushi-eirakukan", name: "出石永楽館", description: "日本最古の芝居小屋", latitude: 35.461953, longitude: 134.871503, detailedDescription: "明治時代に建てられた芝居小屋", mapLink: "https://maps.app.goo.gl/4KVAbEH2a8eGxmSAA", detailPage: "#", stampImage: "./images/eirakukan_stamp.png" }
         ];
 
@@ -248,7 +272,7 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         const authMessageElement = document.getElementById('auth-message');
         const appMainContent = document.getElementById('app-main-content');
-        const userIdDisplay = document.getElementById('user-id-display');
+        // const userIdDisplay = document.getElementById('user-id-display'); // header削除済み
 
         const homeContent = document.getElementById('home-content');
         const collectContent = document.getElementById('collect-content');
@@ -256,8 +280,8 @@
         const contentSections = [homeContent, collectContent, locationsContent];
 
         const homeStampProgressElement = document.getElementById('home-stamp-progress');
-        const stampListCollectElement = document.getElementById('stamp-list-collect'); // ※旧UI用
-        const stampStandElement = document.getElementById('stamp-stand'); // 新スタンプ台
+        const stampListCollectElement = document.getElementById('stamp-list-collect');
+        const stampStandElement = document.getElementById('stamp-stand');
         const stampLocationsListElement = document.getElementById('stamp-locations-list');
 
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -311,7 +335,6 @@
             if (data) {
                 try {
                     const parsed = JSON.parse(data);
-                    // 初期スタンプとマージ
                     return initialStampPoints.map(initial => {
                         const saved = parsed.find(s => s.id === initial.id);
                         return saved ? { ...initial, ...saved } : { ...initial, isCollected: false, collectedAt: null };
@@ -352,26 +375,18 @@
             homeStampProgressElement.textContent = `${collectedCount} / ${stampsData.length} 個獲得`;
         }
 
-        // 新しいスタンプ台UI（丸形グリッド型/アニメーション対応）
         function updateStampStandUI() {
             if (!stampStandElement || !stampsData) return;
             stampStandElement.innerHTML = '';
             stampsData.forEach(stamp => {
-                // スタンプ画像（今後スポットごとに差し替え可）
                 const imgSrc = stamp.stampImage || defaultStampImgSrc;
-
-                // スタンプ台(circle)
                 const circle = document.createElement('div');
                 circle.className = `stamp-stand-circle${stamp.isCollected ? ' stamp-stand-collected' : ''}`;
-
-                // スタンプ画像
                 const img = document.createElement('img');
                 img.src = imgSrc;
                 img.alt = stamp.name;
                 img.className = 'stamp-stand-img';
                 circle.appendChild(img);
-
-                // スタンプ押印ボタン（未獲得時のみ）
                 if (!stamp.isCollected) {
                     const btn = document.createElement('button');
                     btn.className = 'stamp-stand-btn';
@@ -379,16 +394,12 @@
                     btn.onclick = () => tryCollectStamp(stamp);
                     circle.appendChild(btn);
                 }
-
-                // ラベル
                 const label = document.createElement('span');
                 label.className = 'stamp-stand-label';
                 label.textContent = stamp.name;
-                // 外枠div
                 const extDiv = document.createElement('div');
                 extDiv.appendChild(circle);
                 extDiv.appendChild(label);
-
                 stampStandElement.appendChild(extDiv);
             });
         }
@@ -399,7 +410,6 @@
             stampsData.forEach(stamp => {
                 const locationDiv = document.createElement('div');
                 locationDiv.className = `p-5 rounded-lg shadow-lg ${stamp.isCollected ? 'bg-emerald-50' : 'bg-white'}`;
-
                 let statusText = stamp.isCollected ?
                     `<span class="text-emerald-600 font-semibold">獲得済み</span> (${stamp.collectedAt ? new Date(stamp.collectedAt).toLocaleString() : ''})` :
                     '<span class="text-red-600 font-semibold">未獲得</span>';
@@ -417,7 +427,6 @@
                 `;
                 stampLocationsListElement.appendChild(locationDiv);
             });
-            // "いま獲得判定"ボタンのリスナー
             document.querySelectorAll('.quick-collect-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const stampId = e.target.dataset.stampId;
@@ -429,63 +438,53 @@
             });
         }
 
-        // スタンプ獲得処理
         async function tryCollectStamp(stampToCollect) {
-        showModal("処理中...", "現在位置を取得し、スタンプ獲得を試みています。");
-        modalCloseButton.disabled = true;
-
-        if (!navigator.geolocation) {
-            showModal("エラー", "お使いのブラウザは位置情報サービスに対応していません。");
-            modalCloseButton.disabled = false;
-            return;
-        }
-
-        try {
-            const position = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-            });
-            const { latitude: userLat, longitude: userLon } = position.coords;
-            const distance = getDistance(userLat, userLon, stampToCollect.latitude, stampToCollect.longitude);
-            const acquisitionRange = 0.15; // 範囲
-
-            if (distance <= acquisitionRange) {
-                const now = Date.now();
-                stampsData = stampsData.map(stamp =>
-                    stamp.id === stampToCollect.id
-                        ? { ...stamp, isCollected: true, collectedAt: now }
-                        : stamp
-                );
-                saveStamps(stampsData);
-
-                // モーダルを閉じてスタンプ台のアニメーションを見せる
-                modal.style.display = "none";
+            showModal("処理中...", "現在位置を取得し、スタンプ獲得を試みています。");
+            modalCloseButton.disabled = true;
+            if (!navigator.geolocation) {
+                showModal("エラー", "お使いのブラウザは位置情報サービスに対応していません。");
                 modalCloseButton.disabled = false;
-                updateAllUI();
-                // ダイアログは出さない
-            } else {
-                showModal("残念！", `${stampToCollect.name} にはまだ距離があります。(約 ${distance.toFixed(2)} km)`);
+                return;
             }
-        } catch (error) {
-            let message = "スタンプ獲得処理中にエラーが発生しました。";
-            if (error.code === 1) message = "位置情報の取得が許可されませんでした。";
-            else if (error.code === 2) message = "位置情報が取得できませんでした（電波状況など）。";
-            else if (error.code === 3) message = "位置情報の取得がタイムアウトしました。";
-            showModal("エラー", message);
-        } finally {
-            modalCloseButton.disabled = false;
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                });
+                const { latitude: userLat, longitude: userLon } = position.coords;
+                const distance = getDistance(userLat, userLon, stampToCollect.latitude, stampToCollect.longitude);
+                const acquisitionRange = 0.15;
+                if (distance <= acquisitionRange) {
+                    const now = Date.now();
+                    stampsData = stampsData.map(stamp =>
+                        stamp.id === stampToCollect.id
+                            ? { ...stamp, isCollected: true, collectedAt: now }
+                            : stamp
+                    );
+                    saveStamps(stampsData);
+                    modal.style.display = "none";
+                    modalCloseButton.disabled = false;
+                    updateAllUI();
+                } else {
+                    showModal("残念！", `${stampToCollect.name} にはまだ距離があります。(約 ${distance.toFixed(2)} km)`);
+                }
+            } catch (error) {
+                let message = "スタンプ獲得処理中にエラーが発生しました。";
+                if (error.code === 1) message = "位置情報の取得が許可されませんでした。";
+                else if (error.code === 2) message = "位置情報が取得できませんでした（電波状況など）。";
+                else if (error.code === 3) message = "位置情報の取得がタイムアウトしました。";
+                showModal("エラー", message);
+            } finally {
+                modalCloseButton.disabled = false;
+            }
         }
-    }
 
-        // 初期化
         document.addEventListener('DOMContentLoaded', () => {
-            appMainContent.style.display = 'none'; // 初期ロード時はメイン非表示
+            appMainContent.style.display = 'none';
             loadingIndicator.style.display = 'block';
             setTimeout(() => {
                 userId = getOrCreateUserId();
-                userIdDisplay.textContent = `ユーザーID: ${userId}`;
                 stampsData = loadStamps();
                 updateAllUI();
-
                 const params = new URLSearchParams(window.location.search);
                 const tab = params.get('tab');
                 if(tab && (tab === 'locations' || tab === 'home' || tab === 'collect')) {
@@ -493,34 +492,34 @@
                 } else {
                     activateTab('home');
                 }
-
                 loadingIndicator.style.display = 'none';
                 appMainContent.style.display = 'block';
-            }, 300); // ローディング演出のため少し遅延
+            }, 300);
         });
 
         const shareBtn = document.getElementById('share-x-btn');
         if (shareBtn) {
-        shareBtn.onclick = () => {
-            const collectedCount = stampsData.filter(s => s.isCollected).length;
-            const totalCount = stampsData.length;
-            const text = `#出石スタンプラリー\n${collectedCount} / ${totalCount} のスタンプを獲得しました！\nみんなも挑戦してみよう！`;
-            const url = encodeURIComponent(window.location.href);
-            const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`;
-            window.open(shareUrl, '_blank');
-        };
+            shareBtn.onclick = () => {
+                const collectedCount = stampsData.filter(s => s.isCollected).length;
+                const totalCount = stampsData.length;
+                const text = `#出石スタンプラリー\n${collectedCount} / ${totalCount} のスタンプを獲得しました！\nみんなも挑戦してみよう！`;
+                const url = encodeURIComponent(window.location.href);
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`;
+                window.open(shareUrl, '_blank');
+            };
         }
 
-        // 既存script内の一番下付近に追記
         const resetBtn = document.getElementById('reset-stamps-btn');
-        resetBtn.onclick = () => {
-            if (confirm('スタンプ獲得状況をリセットします。本当によろしいですか？')) {
-                localStorage.removeItem(STORAGE_KEY);
-                stampsData = loadStamps(); // 初期化
-                updateAllUI();
-                showModal("リセット完了", "スタンプ進捗をリセットしました！");
-            }
-        };
+        if (resetBtn) {
+            resetBtn.onclick = () => {
+                if (confirm('スタンプ獲得状況をリセットします。本当によろしいですか？')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    stampsData = loadStamps();
+                    updateAllUI();
+                    showModal("リセット完了", "スタンプ進捗をリセットしました！");
+                }
+            };
+        }
     </script>
 </body>
 </html>
